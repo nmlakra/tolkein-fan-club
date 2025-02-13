@@ -67,3 +67,11 @@ class ParentNode(HTMLNode):
 
         return html_str
 
+    def __repr__(self):
+        if self.children is None:
+            raise ValueError
+        return f'''ParentNode(tag=\t{self.tag},
+children=\t[{",\n\t\t".join([child.__repr__() for child in self.children])}],
+prop=\t\t{self.prop}
+)
+'''
