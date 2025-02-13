@@ -1,7 +1,6 @@
+class HTMLNode:
 
-class HTMLNode():
-
-    def __init__(self, tag = None, value = None, children = None , prop = None) -> None:
+    def __init__(self, tag=None, value=None, children=None, prop=None) -> None:
         self.tag = tag
         self.value = value
         self.children = children
@@ -11,7 +10,7 @@ class HTMLNode():
         raise NotImplementedError
 
     def props_to_html(self):
-        html_str = ''
+        html_str = ""
 
         if self.prop:
             for idx, key in enumerate(self.prop.keys()):
@@ -39,10 +38,10 @@ class LeafNode(HTMLNode):
             return self.value
 
         if self.prop:
-            html_str = f'<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>'
+            html_str = f"<{self.tag} {self.props_to_html()}>{self.value}</{self.tag}>"
             return html_str
 
-        html_str = f'<{self.tag}>{self.value}</{self.tag}>'
+        html_str = f"<{self.tag}>{self.value}</{self.tag}>"
         return html_str
 
     def __repr__(self) -> str:
@@ -60,10 +59,10 @@ class ParentNode(HTMLNode):
         if self.children is None:
             raise ValueError
 
-        html_str = f'<{self.tag}>'
+        html_str = f"<{self.tag}>"
         for child in self.children:
             html_str += child.to_html()
-        html_str += f'</{self.tag}>'
+        html_str += f"</{self.tag}>"
 
         return html_str
 
