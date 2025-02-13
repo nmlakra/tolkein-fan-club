@@ -13,7 +13,7 @@ class TestTextNode(unittest.TestCase):
         node = TextNode("This is a text node", TextType.BOLD)
         node2 = TextNode("This is not a text node", TextType.BOLD)
         node3 = None
-        node4 = TextNode("This is a text node", TextType.NORMAL)
+        node4 = TextNode("This is a text node", TextType.TEXT)
         self.assertNotEqual(node, node2)
         self.assertNotEqual(node, node3)
         self.assertNotEqual(node, node4)

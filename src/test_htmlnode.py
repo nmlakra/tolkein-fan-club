@@ -1,5 +1,7 @@
 import unittest
 
+from main import text_node_to_html_node
+from textnode import TextNode, TextType
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
@@ -47,6 +49,19 @@ class TestLeafNode(unittest.TestCase):
     def test_to_html_no_value(self):
         node2 = LeafNode("p", None)
         self.assertRaises(ValueError, node2.to_html)
+
+    def test_link_node_to_html_node(self):
+
+        link_node = TextNode(
+            "Welcome to boot.dev!", TextType.LINK, "https://www.boot.dev"
+        )
+        leaf_node = LeafNode(
+            "a", "Welcome to boot.dev!", prop={"href": "https://www.boot.dev"}
+        )
+        link_leaf_node = text_node_to_html_node(link_node)
+        self.assertEqual(link_node.text_type, TextType.LINK)
+        self.assertIsInstance(link_leaf_node, LeafNode)
+        self.assertEqual(leaf_node.__repr__(), link_leaf_node.__repr__())
 
 
 class TestParentNode(unittest.TestCase):
