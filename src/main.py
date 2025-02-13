@@ -1,6 +1,27 @@
 from textnode import TextType, TextNode
 from htmlnode import ParentNode, LeafNode
 
+def split_nodes_delimiter(old_nodes, delimiter, text_type):
+    new_nodes = []
+
+    for node in old_nodes:
+
+        buffer = "    "
+        texts = (buffer + node.text).split(delimiter)
+
+        for idx, text in enumerate(texts):
+            text = text.removeprefix(buffer)
+            if idx % 2 == 0 and text:
+                new_nodes.append(
+                    TextNode(text, TextType.TEXT)
+                )
+            elif text:
+                new_nodes.append(
+                    TextNode(text, text_type)
+                )
+    return new_nodes
+
+
 
 def text_node_to_html_node(text_node):
     if text_node.text_type not in TextType:
