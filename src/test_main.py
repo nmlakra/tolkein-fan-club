@@ -64,6 +64,44 @@ class TestSplitNodesDeliminator(unittest.TestCase):
         ]
         self.assertEqual(new_nodes, expected_nodes)
 
+    def test_invalid_markdown(self):
+
+        node = TextNode("Invalid markdown *bold** syntax", TextType.BOLD)
+        self.assertRaises(Exception, split_nodes_delimiter, [node], "**", TextType.BOLD)
+
+    def test_not_text_type(self):
+
+        node = TextNode("*This is an italics sentence*", TextType.ITALIC)
+        new_nodes = split_nodes_delimiter([node], "*", TextType.ITALIC)
+        self.assertEqual(new_nodes, [node])
+
+    def test_delim_bold_and_italic(self):
+        node = TextNode("**bold** and *italic*", TextType.TEXT)
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        new_nodes = split_nodes_delimiter(new_nodes, "*", TextType.ITALIC)
+        self.assertListEqual(
+            [
+                TextNode("bold", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("italic", TextType.ITALIC),
+            ],
+            new_nodes,
+        )
+
+    def test_delim_bold_multiword(self):
+        node = TextNode(
+            "This is text with a **bolded word** and **another**", TextType.TEXT
+        )
+        new_nodes = split_nodes_delimiter([node], "**", TextType.BOLD)
+        self.assertListEqual(
+            [
+                TextNode("This is text with a ", TextType.TEXT),
+                TextNode("bolded word", TextType.BOLD),
+                TextNode(" and ", TextType.TEXT),
+                TextNode("another", TextType.BOLD),
+            ],
+            new_nodes,
+        )
 
 class TestTextNodeToHtmlNode(unittest.TestCase):
 

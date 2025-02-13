@@ -1,10 +1,27 @@
 from textnode import TextType, TextNode
 from htmlnode import ParentNode, LeafNode
 
+
+def validate_markdown(text, delimiter):
+
+    delimiter_count = 0
+    n = len(text)
+    m = len(delimiter)
+    for i in range(n):
+        if text[i: i+m] == delimiter:
+            delimiter_count += 1
+    if delimiter_count % 2 != 0:
+        raise Exception("Invalid markdown syntax found!")
+
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
 
     for node in old_nodes:
+        validate_markdown(node.text, delimiter)
+
+        if node.text_type != TextType.TEXT:
+            new_nodes.append(node)
+            continue
 
         buffer = "    "
         texts = (buffer + node.text).split(delimiter)
