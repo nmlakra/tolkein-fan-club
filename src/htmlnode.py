@@ -1,5 +1,4 @@
 
-
 class HTMLNode():
 
     def __init__(self, tag = None, value = None, children = None , prop = None) -> None:
@@ -15,8 +14,11 @@ class HTMLNode():
         html_str = ''
 
         if self.prop:
-            for key, val in self.prop.items():
-                html_str += f'{key}="{val}" '
+            for idx, key in enumerate(self.prop.keys()):
+                if idx == 0:
+                    html_str += f'{key}="{self.prop[key]}"'
+                else:
+                    html_str += f' {key}="{self.prop[key]}"'
 
         return html_str
 

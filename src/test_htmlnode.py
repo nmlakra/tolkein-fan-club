@@ -10,4 +10,4 @@ class TestHTMLNode(unittest.TestCase):
             "href": "https://www.google.com",
             "target": "_blank",
         })
-        self.assertEqual(node.props_to_html(), 'href="https://www.google.com" target="_blank" ')
+        self.assertEqual(node.props_to_html(), 'href="https://www.google.com" target="_blank"')
