@@ -11,13 +11,15 @@ def validate_markdown(text, delimiter):
         if text[i: i+m] == delimiter:
             delimiter_count += 1
     if delimiter_count % 2 != 0:
-        raise Exception("Invalid markdown syntax found!")
+       return False
+    return True
 
 def split_nodes_delimiter(old_nodes, delimiter, text_type):
     new_nodes = []
 
     for node in old_nodes:
-        validate_markdown(node.text, delimiter)
+        if not validate_markdown(node.text, delimiter):
+            raise Exception("Invalid markdown syntax!")
 
         if node.text_type != TextType.TEXT:
             new_nodes.append(node)
