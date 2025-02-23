@@ -6,6 +6,12 @@ from htmlnode import LeafNode
 
 class TestSplitNodeLink(unittest.TestCase):
 
+    def test_none_node(self):
+        node = TextNode("", TextType.TEXT)
+        expected_value = [node]
+        return_value = split_node_link([node])
+        self.assertEqual(expected_value, return_value)
+
     def test_single_link_node(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev)"
         text_node = TextNode(text, TextType.TEXT)
@@ -13,6 +19,33 @@ class TestSplitNodeLink(unittest.TestCase):
                           TextNode("to boot dev", TextType.LINK, "https://www.boot.dev")
                           ]
         return_value = split_node_link([text_node])
+        self.assertEqual(expected_value, return_value)
+
+        text2 = "This is text with a link [to boot dev](https://www.boot.dev) and something else!"
+        text_node2 = TextNode(text2, TextType.TEXT)
+        expected_value2 = [TextNode("This is text with a link ", TextType.TEXT),
+                          TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                          TextNode(" and something else!", TextType.TEXT)
+                          ]
+        return_value2 = split_node_link([text_node2])
+        self.assertEqual(expected_value2, return_value2)
+
+    def test_double_link_node(self):
+        node = TextNode(
+            "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
+            TextType.TEXT,
+            )
+
+        expected_value = [
+                TextNode("This is text with a link ", TextType.TEXT),
+                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+                TextNode(" and ", TextType.TEXT),
+                TextNode(
+                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+                ),
+            ]
+
+        return_value = split_node_link([node])
         self.assertEqual(expected_value, return_value)
 
 class TestExtractMarkdownLinks(unittest.TestCase):
