@@ -1,8 +1,38 @@
 import unittest
 
-from main import text_node_to_html_node, split_nodes_delimiter
+from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_node_link
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
+
+class TestSplitNodeLink(unittest.TestCase):
+
+    def test_single_link_node(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev)"
+        text_node = TextNode(text, TextType.TEXT)
+        expected_value = [TextNode("This is text with a link ", TextType.TEXT),
+                          TextNode("to boot dev", TextType.LINK, "https://www.boot.dev")
+                          ]
+        return_value = split_node_link([text_node])
+        self.assertEqual(expected_value, return_value)
+
+class TestExtractMarkdownLinks(unittest.TestCase):
+
+    def test_double_markdown_links(self):
+
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        expected_value = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        return_value = extract_markdown_links(text)
+
+        self.assertEqual(expected_value, return_value)
+
+class TestExtractMarkdownImages(unittest.TestCase):
+
+    def test_double_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        expected_value = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        return_value = extract_markdown_images(text)
+
+        self.assertEqual(expected_value, return_value)
 
 class TestSplitNodesDeliminator(unittest.TestCase):
 
