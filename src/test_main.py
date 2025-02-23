@@ -1,8 +1,21 @@
 import unittest
 
-from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_node_link
+from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_node_link, split_node_image
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
+
+class TestSplitNodeImage(unittest.TestCase):
+
+    def test_double_link_node(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        text_node = TextNode(text, TextType.TEXT)
+        expected_value = [TextNode("This is text with a ", TextType.TEXT),
+                          TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+                          TextNode(" and ", TextType.TEXT),
+                          TextNode("obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg")
+                          ]
+        return_value = split_node_image([text_node])
+        self.assertEqual(expected_value, return_value)
 
 class TestSplitNodeLink(unittest.TestCase):
 
