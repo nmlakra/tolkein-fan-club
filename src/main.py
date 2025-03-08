@@ -3,13 +3,13 @@ from textnode import TextType, TextNode
 from htmlnode import ParentNode, LeafNode
 
 
-def text_to_textnode(text):
+def text_to_textnodes(text):
     text_node = TextNode(text, TextType.TEXT)
     nodes = split_node_link(
         split_node_image(
             split_nodes_delimiter(
                 split_nodes_delimiter(
-                    split_nodes_delimiter(text_node, "_", TextType.ITALIC),
+                    split_nodes_delimiter([text_node], "_", TextType.ITALIC),
                     "**",
                     TextType.BOLD,
                 ),
@@ -64,7 +64,6 @@ def split_node_image(old_nodes):
 
 
 def split_node_link(old_nodes):
-
     new_nodes = []
     for node in old_nodes:
         if node.text_type != TextType.TEXT:

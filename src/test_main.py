@@ -7,17 +7,17 @@ from main import (
     extract_markdown_links,
     split_node_link,
     split_node_image,
-    text_to_textnode
+    text_to_textnodes
 )
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
 
 
-class TestTextToNode(unittest.TestCase):
+class TestTextToTextNode(unittest.TestCase):
 
-    def base_case(self):
+    def test_mixed_text_markdown(self):
         text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
-        expected_values = [
+        expected_nodes = [
         TextNode("This is ", TextType.TEXT),
         TextNode("text", TextType.BOLD),
         TextNode(" with an ", TextType.TEXT),
@@ -27,11 +27,36 @@ class TestTextToNode(unittest.TestCase):
         TextNode(" and an ", TextType.TEXT),
         TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
         TextNode(" and a ", TextType.TEXT),
-        TextNode("link", TextType.LINK, "https://boot.dev"),
+        TextNode("link", TextType.LINK, "https://boot.dev")
         ]
-        print("Running text_to_node test")
-        return_values = text_to_textnode(text)
-        self.assertEqual(expected_values, return_values)
+        actual_nodes = text_to_textnodes(text)
+        self.assertEqual(expected_nodes, actual_nodes)
+
+    def test_text_to_textnodes_adjacent_elements(self):
+        text = "**Bold**_Italic_"
+        expected_nodes = [
+            TextNode("Bold", TextType.BOLD),
+            TextNode("Italic", TextType.ITALIC)
+        ]
+        actual_nodes = text_to_textnodes(text)
+        self.assertEqual(expected_nodes, actual_nodes)
+
+    def test_none_markdown(self):
+        text = ""
+        expected_nodes = []
+        actual_nodes = text_to_textnodes(text)
+        self.assertEqual(expected_nodes, actual_nodes)
+
+    def test_text_to_textnodes_multiple_links(self):
+        text = "These are the two [link1](https://example.com) and [link2](https://boot.dev)"
+        expected_nodes = [
+            TextNode("These are the two ", TextType.TEXT),
+            TextNode("link1", TextType.LINK, "https://example.com"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("link2", TextType.LINK, "https://boot.dev")
+        ]
+        actual_nodes = text_to_textnodes(text)
+        self.assertEqual(expected_nodes, actual_nodes)
 
 class TestSplitNodeImage(unittest.TestCase):
 
