@@ -1,21 +1,52 @@
 import unittest
 
-from main import text_node_to_html_node, split_nodes_delimiter, extract_markdown_images, extract_markdown_links, split_node_link, split_node_image
+from main import (
+    text_node_to_html_node,
+    split_nodes_delimiter,
+    extract_markdown_images,
+    extract_markdown_links,
+    split_node_link,
+    split_node_image,
+    text_to_textnode
+)
 from textnode import TextNode, TextType
 from htmlnode import LeafNode
+
+
+class TestTextToNode(unittest.TestCase):
+
+    def base_case(self):
+        text = "This is **text** with an _italic_ word and a `code block` and an ![obi wan image](https://i.imgur.com/fJRm4Vk.jpeg) and a [link](https://boot.dev)"
+        expected_values = [
+        TextNode("This is ", TextType.TEXT),
+        TextNode("text", TextType.BOLD),
+        TextNode(" with an ", TextType.TEXT),
+        TextNode("italic", TextType.ITALIC),
+        TextNode(" word and a ", TextType.TEXT),
+        TextNode("code block", TextType.CODE),
+        TextNode(" and an ", TextType.TEXT),
+        TextNode("obi wan image", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        TextNode(" and a ", TextType.TEXT),
+        TextNode("link", TextType.LINK, "https://boot.dev"),
+        ]
+        print("Running text_to_node test")
+        return_values = text_to_textnode(text)
+        self.assertEqual(expected_values, return_values)
 
 class TestSplitNodeImage(unittest.TestCase):
 
     def test_double_link_node(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
         text_node = TextNode(text, TextType.TEXT)
-        expected_value = [TextNode("This is text with a ", TextType.TEXT),
-                          TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
-                          TextNode(" and ", TextType.TEXT),
-                          TextNode("obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg")
-                          ]
+        expected_value = [
+            TextNode("This is text with a ", TextType.TEXT),
+            TextNode("rick roll", TextType.IMAGE, "https://i.imgur.com/aKaOqIh.gif"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode("obi wan", TextType.IMAGE, "https://i.imgur.com/fJRm4Vk.jpeg"),
+        ]
         return_value = split_node_image([text_node])
         self.assertEqual(expected_value, return_value)
+
 
 class TestSplitNodeLink(unittest.TestCase):
 
@@ -28,18 +59,20 @@ class TestSplitNodeLink(unittest.TestCase):
     def test_single_link_node(self):
         text = "This is text with a link [to boot dev](https://www.boot.dev)"
         text_node = TextNode(text, TextType.TEXT)
-        expected_value = [TextNode("This is text with a link ", TextType.TEXT),
-                          TextNode("to boot dev", TextType.LINK, "https://www.boot.dev")
-                          ]
+        expected_value = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+        ]
         return_value = split_node_link([text_node])
         self.assertEqual(expected_value, return_value)
 
         text2 = "This is text with a link [to boot dev](https://www.boot.dev) and something else!"
         text_node2 = TextNode(text2, TextType.TEXT)
-        expected_value2 = [TextNode("This is text with a link ", TextType.TEXT),
-                          TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
-                          TextNode(" and something else!", TextType.TEXT)
-                          ]
+        expected_value2 = [
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and something else!", TextType.TEXT),
+        ]
         return_value2 = split_node_link([text_node2])
         self.assertEqual(expected_value2, return_value2)
 
@@ -47,38 +80,47 @@ class TestSplitNodeLink(unittest.TestCase):
         node = TextNode(
             "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)",
             TextType.TEXT,
-            )
+        )
 
         expected_value = [
-                TextNode("This is text with a link ", TextType.TEXT),
-                TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
-                TextNode(" and ", TextType.TEXT),
-                TextNode(
-                    "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
-                ),
-            ]
+            TextNode("This is text with a link ", TextType.TEXT),
+            TextNode("to boot dev", TextType.LINK, "https://www.boot.dev"),
+            TextNode(" and ", TextType.TEXT),
+            TextNode(
+                "to youtube", TextType.LINK, "https://www.youtube.com/@bootdotdev"
+            ),
+        ]
 
         return_value = split_node_link([node])
         self.assertEqual(expected_value, return_value)
+
 
 class TestExtractMarkdownLinks(unittest.TestCase):
 
     def test_double_markdown_links(self):
 
         text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
-        expected_value = [("to boot dev", "https://www.boot.dev"), ("to youtube", "https://www.youtube.com/@bootdotdev")]
+        expected_value = [
+            ("to boot dev", "https://www.boot.dev"),
+            ("to youtube", "https://www.youtube.com/@bootdotdev"),
+        ]
         return_value = extract_markdown_links(text)
 
         self.assertEqual(expected_value, return_value)
+
 
 class TestExtractMarkdownImages(unittest.TestCase):
 
     def test_double_markdown_images(self):
         text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
-        expected_value = [("rick roll", "https://i.imgur.com/aKaOqIh.gif"), ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")]
+        expected_value = [
+            ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+            ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg"),
+        ]
         return_value = extract_markdown_images(text)
 
         self.assertEqual(expected_value, return_value)
+
 
 class TestSplitNodesDeliminator(unittest.TestCase):
 
@@ -93,7 +135,6 @@ class TestSplitNodesDeliminator(unittest.TestCase):
             TextNode(" word", TextType.TEXT),
         ]
         self.assertEqual(new_nodes, expected_nodes)
-
 
     def test_bold_word(self):
 
@@ -179,6 +220,7 @@ class TestSplitNodesDeliminator(unittest.TestCase):
             new_nodes,
         )
 
+
 class TestTextNodeToHtmlNode(unittest.TestCase):
 
     def test_link_node_to_html_node(self):
@@ -217,7 +259,6 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
         self.assertIsInstance(italic_leaf_node, LeafNode)
         self.assertEqual(leaf_node.__repr__(), italic_leaf_node.__repr__())
 
-
     def test_code_node_to_html_node(self):
         code_node = TextNode("Code text", TextType.CODE)
         leaf_node = LeafNode("code", "Code text")
@@ -226,12 +267,12 @@ class TestTextNodeToHtmlNode(unittest.TestCase):
         self.assertIsInstance(code_leaf_node, LeafNode)
         self.assertEqual(leaf_node.__repr__(), code_leaf_node.__repr__())
 
-
     def test_image_node_html_node(self):
         img_node = TextNode("Alt text", TextType.IMAGE, "https:boot.dev/random_img.png")
-        leaf_node = LeafNode("img", "", {"src": "https:boot.dev/random_img.png", "alt": "Alt text"})
+        leaf_node = LeafNode(
+            "img", "", {"src": "https:boot.dev/random_img.png", "alt": "Alt text"}
+        )
         img_leaf_node = text_node_to_html_node(img_node)
         self.assertEqual(img_node.text_type, TextType.IMAGE)
         self.assertIsInstance(img_leaf_node, LeafNode)
         self.assertEqual(leaf_node.__repr__(), img_leaf_node.__repr__())
-
