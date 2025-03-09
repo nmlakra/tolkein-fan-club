@@ -2,7 +2,6 @@ import re
 from textnode import TextType, TextNode
 from htmlnode import ParentNode, LeafNode
 
-
 def text_to_textnodes(text):
     text_node = TextNode(text, TextType.TEXT)
     nodes = split_node_link(
