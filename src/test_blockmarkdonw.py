@@ -1,5 +1,12 @@
 import unittest
-from block_markdown import markdown_to_blocks, block_to_block_type, BlockType, markdown_to_html_node, extract_title
+from block_markdown import (
+    markdown_to_blocks,
+    block_to_block_type,
+    BlockType,
+    markdown_to_html_node,
+    extract_title,
+)
+
 
 class TestExtractTile(unittest.TestCase):
 
@@ -19,6 +26,7 @@ Not a title #
         with self.assertRaises(Exception):
             extract_title(md)
 
+
 class TestMarkdownToHTMLNode(unittest.TestCase):
 
     def test_olists(self):
@@ -32,7 +40,7 @@ class TestMarkdownToHTMLNode(unittest.TestCase):
         html = node.to_html()
         self.assertEqual(
             html,
-            "<div><ol><li>This is the <b>first</b> list item</li><li>This is the second list item</li><li>This is the <i>third</i> list item</li></ol></div>"
+            "<div><ol><li>This is the <b>first</b> list item</li><li>This is the second list item</li><li>This is the <i>third</i> list item</li></ol></div>",
         )
 
     def test_paragraphs(self):
@@ -67,6 +75,7 @@ the **same** even with inline stuff
             "<div><pre><code>This is text that _should_ remain\nthe **same** even with inline stuff\n</code></pre></div>",
         )
 
+
 class TestMarkdownToBlocks(unittest.TestCase):
 
     def test_markdown_to_block(self):
@@ -97,39 +106,28 @@ class TestBlockToBlock(unittest.TestCase):
         md_text = "This is **bolded** paragraph"
 
         block_type = block_to_block_type(md_text)
-        self.assertEqual(
-            block_type,
-            BlockType.PARAGRAPH)
+        self.assertEqual(block_type, BlockType.PARAGRAPH)
 
     def test_heading(self):
 
         md_text = "# Level 1 Heading"
 
         block_type = block_to_block_type(md_text)
-        self.assertEqual(
-            block_type,
-            BlockType.HEADING)
+        self.assertEqual(block_type, BlockType.HEADING)
 
     def test_code_block(self):
         md_text = "```\nThis is a code block\n```"
 
         block_type = block_to_block_type(md_text)
-        self.assertEqual(
-            block_type,
-            BlockType.CODE)
+        self.assertEqual(block_type, BlockType.CODE)
 
     def test_ordered_list(self):
         md_text = "1. ordered item one\n2. ordered item two\n3. ordered item three"
 
         block_type = block_to_block_type(md_text)
-        self.assertEqual(
-            block_type,
-            BlockType.ORDERED_LIST)
+        self.assertEqual(block_type, BlockType.ORDERED_LIST)
 
     def test_unordered_list(self):
         md_text = "- unordered list item one\n- unordered list item two\n- unordred list item three"
         block_type = block_to_block_type(md_text)
-        self.assertEqual(
-            block_type,
-            BlockType.UNORDERED_LIST)
-
+        self.assertEqual(block_type, BlockType.UNORDERED_LIST)
