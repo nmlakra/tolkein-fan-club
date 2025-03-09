@@ -1,7 +1,8 @@
 import unittest
 
-from main import (
-    text_node_to_html_node,
+from textnode import text_node_to_html_node
+
+from inline_markdown import (
     split_nodes_delimiter,
     extract_markdown_images,
     extract_markdown_links,
