@@ -1,5 +1,23 @@
 import unittest
-from block_markdown import markdown_to_blocks, block_to_block_type, BlockType, markdown_to_html_node
+from block_markdown import markdown_to_blocks, block_to_block_type, BlockType, markdown_to_html_node, extract_title
+
+class TestExtractTile(unittest.TestCase):
+
+    def test_heading1(self):
+        md = """
+# Title
+
+Not a title #
+"""
+        title = extract_title(md)
+        self.assertEqual(title, "Title")
+
+    def test_heading2(self):
+        md = """
+## Heading 2
+"""
+        with self.assertRaises(Exception):
+            extract_title(md)
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
 

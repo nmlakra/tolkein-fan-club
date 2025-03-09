@@ -12,6 +12,13 @@ class BlockType(EnumType):
     UNORDERED_LIST = "undordered_list"
     ORDERED_LIST = "ordered_list"
 
+def extract_title(markdown_text):
+    blocks = markdown_to_blocks(markdown_text)
+    for block in blocks:
+        if block.startswith("# "):
+            return block.removeprefix("# ").strip()
+    raise Exception("Title not found!")
+
 def validate_markdown_ordered_list(text):
     lines = text.split("\n")
     for i in range(len(lines)):
