@@ -49,6 +49,6 @@ def main(basepath):
 
 if __name__ == "__main__":
     basepath = "/"
-    if len(argv):
+    if len(argv) > 1:
         basepath = argv[1]
     main(basepath)
