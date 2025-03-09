@@ -1,1 +1,1 @@
-python3 src/main.py "./tolkein-fan-club/"
+python3 src/main.py "/tolkein-fan-club/"
