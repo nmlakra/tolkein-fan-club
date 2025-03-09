@@ -3,21 +3,6 @@ import os
 import shutil
 from sys import argv
 
-def remove_dir_content(dir_path):
-    if os.path.exists(dir_path):
-        dir_items = os.listdir(dir_path)
-        for item in dir_items:
-            item_path = os.path.join(dir_path, item)
-            if os.path.isfile(item_path):
-                os.remove(item_path)
-            else:
-                remove_dir_content(item_path)
-                os.removedirs(item_path)
-
-        print(f"Cleand {dir_path}!")
-    else:
-        print(f"{dir_path} doesn't exist!")
-
 
 def copy_source_files_to_destination(src_path, dst_path):
 
@@ -41,7 +26,8 @@ def main(basepath):
     template_path = "template.html"
 
     if os.path.exists(destination_path):
-        remove_dir_content(destination_path)
+        print(f"Deleting contents in {destination_path}")
+        shutil.rmtree(destination_path)
 
     copy_source_files_to_destination(static_source_path, destination_path)
     generate_pages_recursively(content_source_path, template_path, destination_path, basepath)
