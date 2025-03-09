@@ -29,6 +29,35 @@ Not a title #
 
 class TestMarkdownToHTMLNode(unittest.TestCase):
 
+    def test_paragrahs_qoutes(self):
+        md = """
+Here's the deal, **I like Tolkien**.
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(html,
+            '<div><p>Here\'s the deal, <b>I like Tolkien</b>.</p><blockquote>"I am in fact a Hobbit in all but size."-- J.R.R. Tolkien</blockquote></div>'
+        )
+
+
+    def test_quotes(self):
+        md = """
+> 'Interesting and deep quote'
+>
+> -- buh
+"""
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+            html,
+            "<div><blockquote>'Interesting and deep quote'-- buh</blockquote></div>"
+        )
+
+
     def test_olists(self):
         md = """
 1. This is the **first** list item
@@ -115,19 +144,26 @@ class TestBlockToBlock(unittest.TestCase):
         block_type = block_to_block_type(md_text)
         self.assertEqual(block_type, BlockType.HEADING)
 
-    def test_code_block(self):
-        md_text = "```\nThis is a code block\n```"
+    def test_quote(self):
 
+        md_text = ("> 'Interesting and deep quote'"
+                   "> "
+                   "> -- buh")
+        block_type = block_to_block_type(md_text)
+        self.assertEqual(block_type, BlockType.QUOTE)
+
+    def test_code_block(self):
+        md_text = """```\ncode\n```"""
         block_type = block_to_block_type(md_text)
         self.assertEqual(block_type, BlockType.CODE)
 
-    def test_ordered_list(self):
-        md_text = "1. ordered item one\n2. ordered item two\n3. ordered item three"
+def test_ordered_list(self):
+    md_text = "1. ordered item one\n2. ordered item two\n3. ordered item three"
 
-        block_type = block_to_block_type(md_text)
-        self.assertEqual(block_type, BlockType.ORDERED_LIST)
+    block_type = block_to_block_type(md_text)
+    self.assertEqual(block_type, BlockType.ORDERED_LIST)
 
-    def test_unordered_list(self):
-        md_text = "- unordered list item one\n- unordered list item two\n- unordred list item three"
-        block_type = block_to_block_type(md_text)
-        self.assertEqual(block_type, BlockType.UNORDERED_LIST)
+def test_unordered_list(self):
+    md_text = "- unordered list item one\n- unordered list item two\n- unordred list item three"
+    block_type = block_to_block_type(md_text)
+    self.assertEqual(block_type, BlockType.UNORDERED_LIST)

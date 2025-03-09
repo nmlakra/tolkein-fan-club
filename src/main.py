@@ -1,28 +1,7 @@
-from block_markdown import markdown_to_html_node, extract_title
+from generate_html_pages import generate_pages_recursively
 import os
 import shutil
-
-
-def generate_page(from_path, template_path, dest_path):
-    print(f"Generateing page from {from_path} to {dest_path} using {template_path}")
-
-    with open(from_path) as content_file:
-        markdown_text = content_file.read()
-
-    with open(template_path) as template_file:
-        template_text = template_file.read()
-
-    node = markdown_to_html_node(markdown_text)
-    content_html = node.to_html()
-    title = extract_title(markdown_text)
-
-    ouput_html = template_text.replace("{{ Title }}", title).replace(
-        "{{ Content }}", content_html
-    )
-
-    with open(dest_path, "w") as html_file:
-        html_file.write(ouput_html)
-
+from sys import argv
 
 def remove_dir_content(dir_path):
     if os.path.exists(dir_path):
@@ -55,20 +34,21 @@ def copy_source_files_to_destination(src_path, dst_path):
             copy_source_files_to_destination(item_src_path, item_dst_path)
 
 
-def copy_static_to_public():
-    source_path = "./static"
-    destination_path = "./public"
+def main(basepath):
+    static_source_path = "static"
+    content_source_path = "content"
+    destination_path = "docs"
+    template_path = "template.html"
 
     if os.path.exists(destination_path):
         remove_dir_content(destination_path)
 
-    copy_source_files_to_destination(source_path, destination_path)
-
-
-def main():
-    copy_static_to_public()
-    generate_page("content/index.md", "template.html", "public/index.html")
+    copy_source_files_to_destination(static_source_path, destination_path)
+    generate_pages_recursively(content_source_path, template_path, destination_path, basepath)
 
 
 if __name__ == "__main__":
-    main()
+    basepath = "/"
+    if len(argv):
+        basepath = argv[1]
+    main(basepath)

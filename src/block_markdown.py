@@ -1,5 +1,4 @@
 from enum import EnumType
-import re
 from htmlnode import ParentNode
 from inline_markdown import text_to_textnodes
 from textnode import TextNode, TextType, text_node_to_html_node
@@ -18,7 +17,7 @@ def extract_title(markdown_text):
     blocks = markdown_to_blocks(markdown_text)
     for block in blocks:
         if block.startswith("# "):
-            return block.removeprefix("# ").strip()
+            return block.removeprefix("# ").lstrip()
     raise Exception("Title not found!")
 
 
@@ -31,24 +30,44 @@ def validate_markdown_ordered_list(text):
     return True
 
 
-def block_to_block_type(markdown_block):
-    heading_pattern = re.compile(r"^#{1,6}\s+(?=.*\S).+$")
-    if heading_pattern.match(markdown_block):
-        return BlockType.HEADING
-    if markdown_block.startswith("```") and markdown_block.endswith("```"):
-        return BlockType.CODE
-    if all(line.startswith("> ") for line in markdown_block.split()):
-        return BlockType.QUOTE
-    if all(line.startswith("- ") for line in markdown_block.split("\n")):
-        return BlockType.UNORDERED_LIST
-    if validate_markdown_ordered_list(markdown_block):
-        return BlockType.ORDERED_LIST
 
+def block_to_block_type(block):
+    lines = block.split("\n")
+
+    if block.startswith(("# ", "## ", "### ", "#### ", "##### ", "###### ")):
+        return BlockType.HEADING
+    if len(lines) > 1 and lines[0].startswith("```") and lines[-1].startswith("```"):
+        return BlockType.CODE
+    if block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return BlockType.PARAGRAPH
+        return BlockType.QUOTE
+    if block.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
+                return BlockType.PARAGRAPH
+        return BlockType.UNORDERED_LIST
+    if block.startswith("1. "):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}. "):
+                return BlockType.PARAGRAPH
+            i += 1
+        return BlockType.ORDERED_LIST
     return BlockType.PARAGRAPH
 
 
+
 def markdown_to_blocks(markdown_text):
-    return markdown_text.strip().split("\n\n")
+    blocks = markdown_text.split("\n\n")
+    filtered_blocks = []
+    for block in blocks:
+        if block == "":
+            continue
+        block = block.strip()
+        filtered_blocks.append(block)
+    return filtered_blocks
 
 
 def text_to_children(text):
@@ -57,7 +76,7 @@ def text_to_children(text):
 
 
 def block_to_paragraph_node(markdown_block):
-    markdown_block = markdown_block.replace("\n", " ")
+    markdown_block = " ".join(markdown_block.split("\n"))
     children_node = text_to_children(markdown_block)
     paragraph_node = ParentNode("p", children_node)
     return paragraph_node
@@ -65,16 +84,16 @@ def block_to_paragraph_node(markdown_block):
 
 def block_to_heading_node(markdown_block):
     heading_level = markdown_block.count("#")
-    markdown_block = markdown_block.removeprefix("#" * heading_level)
+    markdown_block = markdown_block.removeprefix("#" * heading_level).strip()
     children_nodes = text_to_children(markdown_block)
     heading_node = ParentNode(f"h{heading_level}", children_nodes)
     return heading_node
 
 
 def block_to_quote_node(markdown_block):
+    markdown_block = "".join(line.removeprefix(">").strip() for line in markdown_block.split("\n"))
     children_nodes = []
-    for line in markdown_block.split("\n"):
-        children_nodes.append(text_to_children(line.removeprefix("> ")))
+    children_nodes.append(text_to_children(markdown_block))
     children_nodes = text_to_children(markdown_block)
     quote_node = ParentNode("blockquote", children_nodes)
     return quote_node
